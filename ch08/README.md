@@ -2,12 +2,10 @@
   - [8.1 域名系统](#81-域名系统)
     - [8.1.1 什么是域名](#811-什么是域名)
     - [8.1.2 DNS 服务器](#812-dns-服务器)
-  - [8.2 IP 地址和域名之间的转换](#82-ip地址和域名之间的转换)
+  - [8.2 IP 地址和域名之间的转换](#82-ip-地址和域名之间的转换)
     - [8.2.1 程序中有必要使用域名吗？](#821-程序中有必要使用域名吗)
-    - [8.2.2 利用域名获取 IP 地址](#822-利用域名获取ip地址)
-    - [8.2.3 利用 IP 地址获取域名](#823-利用ip地址获取域名)
-  - [8.3 基于 Windows 的实现](#83-基于-windows-的实现)
-  - [8.4 习题](#84-习题)
+    - [8.2.2 利用域名获取 IP 地址](#822-利用域名获取-ip-地址)
+    - [8.2.3 利用 IP 地址获取域名](#823-利用-ip-地址获取域名)
 
 ## 第 8 章 域名及网络地址
 
@@ -45,7 +43,7 @@ struct hostent *gethostbyname(const char *hostname);
 */
 ```
 
-这个函数使用方便，只要传递字符串，就可以返回域名对应的 IP 地址。只是返回时，地址信息装入 hostent 结构体。此结构体的定义如下：
+这个函数使用方便，只要传递字符串，就可以返回域名对应的 IP 地址。只是返回时，地址信息装入 `hostent` 结构体。此结构体的定义如下：
 
 ```c
 struct hostent
@@ -58,21 +56,21 @@ struct hostent
 };
 ```
 
-从上述结构体可以看出，不止返回 IP 信息，同事还带着其他信息一起返回。域名转换成 IP 时只需要关注 h_addr_list 。下面简要说明上述结构体的成员：
+从上述结构体可以看出，不止返回 IP 信息，同事还带着其他信息一起返回。域名转换成 IP 时只需要关注 `h_addr_list` 。下面简要说明上述结构体的成员：
 
-- h_name：该变量中存有官方域名（Official domain name）。官方域名代表某一主页，但实际上，一些著名公司的域名并没有用官方域名注册。
-- h_aliases：可以通过多个域名访问同一主页。同一 IP 可以绑定多个域名，因此，除官方域名外还可以指定其他域名。这些信息可以通过 h_aliases 获得。
-- h_addrtype：gethostbyname 函数不仅支持 IPV4 还支持 IPV6 。因此可以通过此变量获取保存在 h_addr_list 的 IP 地址族信息。若是 IPV4 ，则此变量中存有 AF_INET。
-- h_length：保存 IP 地址长度。若是 IPV4 地址，因为是 4 个字节，则保存 4；IPV6 时，因为是 16 个字节，故保存 16
-- h_addr_list：这个是最重要的的成员。通过此变量以整数形式保存域名相对应的 IP 地址。另外，用户比较多的网站有可能分配多个 IP 地址给同一个域名，利用多个服务器做负载均衡，。此时可以通过此变量获取 IP 地址信息。
+- `h_name`：该变量中存有官方域名（Official domain name）。官方域名代表某一主页，但实际上，一些著名公司的域名并没有用官方域名注册。
+- `h_aliases`：可以通过多个域名访问同一主页。同一 IP 可以绑定多个域名，因此，除官方域名外还可以指定其他域名。这些信息可以通过 `h_aliases` 获得。
+- `h_addrtype`：`gethostbyname` 函数不仅支持 IPV4 还支持 IPV6 。因此可以通过此变量获取保存在 `h_addr_list` 的 IP 地址族信息。若是 IPV4 ，则此变量中存有 `AF_INET`。
+- `h_length`：保存 IP 地址长度。若是 IPV4 地址，因为是 4 个字节，则保存 4；IPV6 时，因为是 16 个字节，故保存 16
+- `h_addr_list`：这个是最重要的的成员。通过此变量以整数形式保存域名相对应的 IP 地址。另外，用户比较多的网站有可能分配多个 IP 地址给同一个域名，利用多个服务器做负载均衡，。此时可以通过此变量获取 IP 地址信息。
 
-调用 gethostbyname 函数后，返回的结构体变量如图所示：
+调用 `gethostbyname` 函数后，返回的结构体变量如图所示：
 
 ![](https://i.loli.net/2019/01/18/5c41898ae45e8.png)
 
-下面的代码通过一个例子来演示 gethostbyname 的应用，并说明 hostent 结构体变量特性。
+下面的代码通过一个例子来演示 `gethostbyname` 的应用，并说明 `hostent` 结构体变量特性。
 
-- [gethostbyname.c](https://github.com/riba2534/TCP-IP-NetworkNote/blob/master/ch08/gethostbyname.c)
+- [gethostbyname.c](https://github.com/Corner430/TCP-IP-NetworkNote/blob/master/ch08/gethostbyname.c)
 
 编译运行：
 
@@ -87,7 +85,7 @@ gcc gethostbyname.c -o hostname
 
 如图所示，显示出了对百度的域名解析
 
-可以看出，百度有一个域名解析是 CNAME 解析的，指向了`shifen.com`，关于百度具体的解析过程。
+可以看出，百度有一个域名解析是 `CNAME` 解析的，指向了`shifen.com`，关于百度具体的解析过程。
 
 > 这一部分牵扯到了很多关于 DNS 解析的过程，还有 Linux 下关于域名解析的一些命令，我找了一部分资料，可以点下面的链接查看比较详细的：
 >
@@ -104,7 +102,7 @@ gcc gethostbyname.c -o hostname
 inet_ntoa(*(struct in_addr *)host->h_addr_list[i])
 ```
 
-若只看 hostent 的定义，结构体成员 h_addr_list 指向字符串指针数组（由多个字符串地址构成的数组）。但是字符串指针数组保存的元素实际指向的是 in_addr 结构体变量中地址值而非字符串，也就是说`(struct in_addr *)host->h_addr_list[i]`其实是一个指针，然后用`*`符号取具体的值。如图所示：
+若只看 `hostent` 的定义，结构体成员 `h_addr_list` 指向字符串指针数组（由多个字符串地址构成的数组）。但是字符串指针数组保存的元素实际指向的是 in_addr 结构体变量中地址值而非字符串，也就是说`(struct in_addr *)host->h_addr_list[i]`其实是一个指针，然后用`*`符号取具体的值。如图所示：
 
 ![](https://i.loli.net/2019/01/18/5c419658a73b8.png)
 
@@ -125,7 +123,7 @@ family: 传递地址族信息，ipv4 是 AF_INET ，IPV6是 AF_INET6
 
 下面的代码演示使用方法：
 
-- [gethostbyaddr.c](https://github.com/riba2534/TCP-IP-NetworkNote/blob/master/ch08/gethostbyaddr.c)
+- [gethostbyaddr.c](https://github.com/Corner430/TCP-IP-NetworkNote/blob/master/ch08/gethostbyaddr.c)
 
 编译运行：
 
@@ -139,30 +137,3 @@ gcc gethostbyaddr.c -o hostaddr
 ![](https://i.loli.net/2019/01/18/5c41a019085d4.png)
 
 从图上可以看出，`8.8.8.8`这个 IP 地址是谷歌的。
-
-### 8.3 基于 Windows 的实现
-
-暂略
-
-### 8.4 习题
-
-> 以下答案仅代表本人个人观点，可能不是正确答案。
-
-1. **下列关于 DNS 的说法错误的是？**
-
-   答：字体加粗的表示正确答案。
-
-   1. **因为 DNS 从存在，故可以使用域名代替 IP**
-   2. DNS 服务器实际上是路由器，因为路由器根据域名决定数据的路径
-   3. **所有域名信息并非集中与 1 台 DNS 服务器，但可以获取某一 DNS 服务器中未注册的所有地址**
-   4. DNS 服务器根据操作系统进行区分，Windows 下的 DNS 服务器和 Linux 下的 DNS 服务器是不同的。
-
-2. **阅读如下对话，并说明东秀的方案是否可行。（因为对话的字太多，用图代替）**
-
-   ![](https://i.loli.net/2019/01/18/5c41a22f35390.png)
-
-   答：答案就是可行，DNS 服务器是分布式的，一台坏了可以找其他的。
-
-3. **在浏览器地址输入 www.orentec.co.kr ，并整理出主页显示过程。假设浏览器访问默认 DNS 服务器中并没有关于 www.orentec.co.kr 的地址信息.**
-
-   答：可以参考一下知乎回答，[在浏览器地址栏输入一个 URL 后回车，背后会进行哪些技术步骤？](https://www.zhihu.com/question/34873227/answer/518086565),我用我自己的理解，简单说一下，首先会去向上一级的 DNS 服务器去查询，通过这种方式逐级向上传递信息，一直到达根服务器时，它知道应该向哪个 DNS 服务器发起询问。向下传递解析请求，得到 IP 地址候原路返回，最后会将解析的 IP 地址传递到发起请求的主机。

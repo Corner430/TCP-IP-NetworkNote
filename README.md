@@ -92,8 +92,6 @@
       - [8.2.1 程序中有必要使用域名吗？](#821-程序中有必要使用域名吗)
       - [8.2.2 利用域名获取 IP 地址](#822-利用域名获取-ip-地址)
       - [8.2.3 利用 IP 地址获取域名](#823-利用-ip-地址获取域名)
-    - [8.3 基于 Windows 的实现](#83-基于-windows-的实现)
-    - [8.4 习题](#84-习题)
   - [第 9 章 套接字的多种可选项](#第-9-章-套接字的多种可选项)
     - [9.1 套接字可选项和 I/O 缓冲大小](#91-套接字可选项和-io-缓冲大小)
       - [9.1.1 套接字多种可选项](#911-套接字多种可选项)
@@ -106,8 +104,6 @@
     - [9.3 `TCP_NODELAY`](#93-tcp_nodelay)
       - [9.3.1 `Nagle` 算法](#931-nagle-算法)
       - [9.3.2 禁用 `Nagle` 算法](#932-禁用-nagle-算法)
-    - [9.4 基于 Windows 的实现](#94-基于-windows-的实现)
-    - [9.5 习题](#95-习题)
   - [第 10 章 多进程服务器端](#第-10-章-多进程服务器端)
     - [10.1 进程概念及应用](#101-进程概念及应用)
       - [10.1.1 并发服务端的实现方法](#1011-并发服务端的实现方法)
@@ -1797,7 +1793,7 @@ struct hostent *gethostbyname(const char *hostname);
 */
 ```
 
-这个函数使用方便，只要传递字符串，就可以返回域名对应的 IP 地址。只是返回时，地址信息装入 hostent 结构体。此结构体的定义如下：
+这个函数使用方便，只要传递字符串，就可以返回域名对应的 IP 地址。只是返回时，地址信息装入 `hostent` 结构体。此结构体的定义如下：
 
 ```c
 struct hostent
@@ -1810,21 +1806,21 @@ struct hostent
 };
 ```
 
-从上述结构体可以看出，不止返回 IP 信息，同时还带着其他信息一起返回。域名转换成 IP 时只需要关注 h_addr_list 。下面简要说明上述结构体的成员：
+从上述结构体可以看出，不止返回 IP 信息，同事还带着其他信息一起返回。域名转换成 IP 时只需要关注 `h_addr_list` 。下面简要说明上述结构体的成员：
 
-- h_name：该变量中存有官方域名（Official domain name）。官方域名代表某一主页，但实际上，一些著名公司的域名并没有用官方域名注册。
-- h_aliases：可以通过多个域名访问同一主页。同一 IP 可以绑定多个域名，因此，除官方域名外还可以指定其他域名。这些信息可以通过 h_aliases 获得。
-- h_addrtype：gethostbyname 函数不仅支持 IPV4 还支持 IPV6 。因此可以通过此变量获取保存在 h_addr_list 的 IP 地址族信息。若是 IPV4 ，则此变量中存有 AF_INET。
-- h_length：保存 IP 地址长度。若是 IPV4 地址，因为是 4 个字节，则保存 4；IPV6 时，因为是 16 个字节，故保存 16
-- h_addr_list：这个是最重要的的成员。通过此变量以整数形式保存域名相对应的 IP 地址。另外，用户比较多的网站有可能分配多个 IP 地址给同一个域名，利用多个服务器做负载均衡，。此时可以通过此变量获取 IP 地址信息。
+- `h_name`：该变量中存有官方域名（Official domain name）。官方域名代表某一主页，但实际上，一些著名公司的域名并没有用官方域名注册。
+- `h_aliases`：可以通过多个域名访问同一主页。同一 IP 可以绑定多个域名，因此，除官方域名外还可以指定其他域名。这些信息可以通过 `h_aliases` 获得。
+- `h_addrtype`：`gethostbyname` 函数不仅支持 IPV4 还支持 IPV6 。因此可以通过此变量获取保存在 `h_addr_list` 的 IP 地址族信息。若是 IPV4 ，则此变量中存有 `AF_INET`。
+- `h_length`：保存 IP 地址长度。若是 IPV4 地址，因为是 4 个字节，则保存 4；IPV6 时，因为是 16 个字节，故保存 16
+- `h_addr_list`：这个是最重要的的成员。通过此变量以整数形式保存域名相对应的 IP 地址。另外，用户比较多的网站有可能分配多个 IP 地址给同一个域名，利用多个服务器做负载均衡，。此时可以通过此变量获取 IP 地址信息。
 
-调用 gethostbyname 函数后，返回的结构体变量如图所示：
+调用 `gethostbyname` 函数后，返回的结构体变量如图所示：
 
 ![](https://i.loli.net/2019/01/18/5c41898ae45e8.png)
 
-下面的代码通过一个例子来演示 gethostbyname 的应用，并说明 hostent 结构体变量特性。
+下面的代码通过一个例子来演示 `gethostbyname` 的应用，并说明 `hostent` 结构体变量特性。
 
-- [gethostbyname.c](https://github.com/riba2534/TCP-IP-NetworkNote/blob/master/ch08/gethostbyname.c)
+- [gethostbyname.c](https://github.com/Corner430/TCP-IP-NetworkNote/blob/master/ch08/gethostbyname.c)
 
 编译运行：
 
@@ -1839,7 +1835,7 @@ gcc gethostbyname.c -o hostname
 
 如图所示，显示出了对百度的域名解析
 
-可以看出，百度有一个域名解析是 CNAME 解析的，指向了`shifen.com`，关于百度具体的解析过程。
+可以看出，百度有一个域名解析是 `CNAME` 解析的，指向了`shifen.com`，关于百度具体的解析过程。
 
 > 这一部分牵扯到了很多关于 DNS 解析的过程，还有 Linux 下关于域名解析的一些命令，我找了一部分资料，可以点下面的链接查看比较详细的：
 >
@@ -1856,17 +1852,17 @@ gcc gethostbyname.c -o hostname
 inet_ntoa(*(struct in_addr *)host->h_addr_list[i])
 ```
 
-若只看 hostent 的定义，结构体成员 h_addr_list 指向字符串指针数组（由多个字符串地址构成的数组）。但是字符串指针数组保存的元素实际指向的是 in_addr 结构体变量的地址值而非字符串，也就是说`(struct in_addr *)host->h_addr_list[i]`其实是一个指针，然后用`*`符号取具体的值。如图所示：
+若只看 `hostent` 的定义，结构体成员 `h_addr_list` 指向字符串指针数组（由多个字符串地址构成的数组）。但是字符串指针数组保存的元素实际指向的是 in_addr 结构体变量中地址值而非字符串，也就是说`(struct in_addr *)host->h_addr_list[i]`其实是一个指针，然后用`*`符号取具体的值。如图所示：
 
 ![](https://i.loli.net/2019/01/18/5c419658a73b8.png)
 
-> **为什么是「cha\*」而不是「in_addr\*」**
+> **为什么是 `char*` 而不是 `in_addr*`**
 
-    「hostent」结构体的成员「h_addr_st」指向的数组类型并不是「in_addr」结构体的指针数组,而是用了「char」指针。「hostent」结构体并非只为IPV4准备。「h_addr_list」指向的数组中也可以保存Pv6地址信息。考虑到通用性,声明为「char」指针类型的数组
+    `hostent` 结构体的成员 `h_addr_st` 指向的数组类型并不是 `in_addr` 结构体的指针数组,而是用了 `char` 指针。`hostent` 结构体并非只为IPV4准备。`h_addr_list` 指向的数组中也可以保存IPv6 地址信息。考虑到通用性，声明为 `char` 指针类型的数组
 
-> **声明为「void」指针类型是否更合理?**
+> **声明为 `void` 指针类型是否更合理?**
 
-    当然如此。指针对象不明确时,更适合使用vod指针类型。此处不用是版本问题
+    当然如此。指针对象不明确时,更适合使用 `void` 指针类型。此处不用是版本问题
 
 #### 8.2.3 利用 IP 地址获取域名
 
@@ -1885,7 +1881,7 @@ family: 传递地址族信息，ipv4 是 AF_INET ，IPV6是 AF_INET6
 
 下面的代码演示使用方法：
 
-- [gethostbyaddr.c](https://github.com/riba2534/TCP-IP-NetworkNote/blob/master/ch08/gethostbyaddr.c)
+- [gethostbyaddr.c](https://github.com/Corner430/TCP-IP-NetworkNote/blob/master/ch08/gethostbyaddr.c)
 
 编译运行：
 
@@ -1900,36 +1896,9 @@ gcc gethostbyaddr.c -o hostaddr
 
 从图上可以看出，`8.8.8.8`这个 IP 地址是谷歌的。
 
-### 8.3 基于 Windows 的实现
-
-暂略
-
-### 8.4 习题
-
-> 以下答案仅代表本人个人观点，可能不是正确答案。
-
-1. **下列关于 DNS 的说法错误的是？**
-
-   答：字体加粗的表示正确答案。
-
-   1. **因为 DNS 存在，故可以使用域名代替 IP**
-   2. DNS 服务器实际上是路由器，因为路由器根据域名决定数据的路径
-   3. **所有域名信息并非集中与 1 台 DNS 服务器，但可以获取某一 DNS 服务器中未注册的所有地址**
-   4. DNS 服务器根据操作系统进行区分，Windows 下的 DNS 服务器和 Linux 下的 DNS 服务器是不同的。
-
-2. **阅读如下对话，并说明东秀的方案是否可行。（因为对话的字太多，用图代替）**
-
-   ![](https://i.loli.net/2019/01/18/5c41a22f35390.png)
-
-   答：答案就是可行，DNS 服务器是分布式的，一台坏了可以找其他的。
-
-3. **再浏览器地址输入 www.orentec.co.kr ，并整理出主页显示过程。假设浏览器访问默认 DNS 服务器中并没有关于 www.orentec.co.kr 的地址信息.**
-
-   答：可以参考一下知乎回答，[在浏览器地址栏输入一个 URL 后回车，背后会进行哪些技术步骤？](https://www.zhihu.com/question/34873227/answer/518086565),我用我自己的理解，简单说一下，首先会去向上一级的 DNS 服务器去查询，通过这种方式逐级向上传递信息，一直到达根服务器时，它知道应该向哪个 DNS 服务器发起询问。向下传递解析请求，得到 IP 地址候原路返回，最后会将解析的 IP 地址传递到发起请求的主机。
-
 ## 第 9 章 套接字的多种可选项
 
-本章代码，在[TCP-IP-NetworkNote](https://github.com/riba2534/TCP-IP-NetworkNote)中可以找到。
+[本章代码](https://github.com/Corner430/TCP-IP-NetworkNote/blob/master/ch09/README.md)
 
 ### 9.1 套接字可选项和 I/O 缓冲大小
 
@@ -2152,27 +2121,6 @@ getsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (void *)&opt_val, opt_len);
 如果正在使用`Nagle` 算法，那么 opt_val 值为 0，如果禁用则为 1.
 
 关于这个算法，可以参考这个回答：[TCP 连接中启用和禁用 TCP_NODELAY 有什么影响？](https://www.zhihu.com/question/42308970/answer/246334766)
-
-### 9.4 基于 Windows 的实现
-
-暂略
-
-### 9.5 习题
-
-> 以下答案仅代表本人个人观点，可能不是正确答案。
-
-1. **下列关于 Time-wait 状态的说法错误的是？**
-
-   答：以下字体加粗的代表正确。
-
-   1. Time-wait 状态只在服务器的套接字中发生
-   2. **断开连接的四次握手过程中，先传输 FIN 消息的套接字将进入 Time-wait 状态。**
-   3. Time-wait 状态与断开连接的过程无关，而与请求连接过程中 SYN 消息的传输顺序有关
-   4. Time-wait 状态通常并非必要，应尽可能通过更改套接字可选项来防止其发生
-
-2. **TCP_NODELAY 可选项与 Nagle 算法有关，可通过它禁用 Nagle 算法。请问何时应考虑禁用 Nagle 算法？结合收发数据的特性给出说明。**
-
-   答：当网络流量未受太大影响时，不使用 Nagle 算法要比使用它时传输速度快，比如说在传输大文件时。
 
 ## 第 10 章 多进程服务器端
 
